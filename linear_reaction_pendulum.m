@@ -3,4 +3,4 @@ A = [0, 0, 1; 0, -mu_phi/J_phi, 0; -(M*g*L)/J_theta, mu_phi/J_theta, -mu_theta/J
 B = [0; kt/J_phi; -kt/J_theta];
 C = [1, 0, 0; 0, 1, 0];
 D = zeros(2,1);
-end 
+end
