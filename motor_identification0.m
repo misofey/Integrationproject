@@ -19,7 +19,7 @@ nt = length(u_sine);
 Tf = (nt-1) * dt;
 t_sine = 0:dt:Tf;
 
-identified = tfest(u_square, I_mot_square, 5, "Ts", 0.05)
+identified = tfest(u_square, I_mot_square, 4, "Ts", 0.05)
 
 I_sim = lsim(identified, u_square', t_square);
 
@@ -55,5 +55,4 @@ hold on;
 plot(I_mot_sine);
 plot(I_sim_sine);
 legend("sine wave data", "identified model");
-hold off;
-
+hold off
