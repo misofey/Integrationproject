@@ -61,48 +61,14 @@ plot(training_output);
 legend("sine wave data", "identified model");
 hold off
 
-figure;
-hold on;
-plot(I_mot_square);
-plot(square_validation);
-legend("square wave data", "identified model");
-hold off
+% figure;
+% hold on;
+% plot(I_mot_square);
+% plot(square_validation);
+% legend("square wave data", "identified model");
+% hold off
+
+est_mot.InputName = ["u", "phidot"];
+est_mot.OutputName = "I_mot";
 
 save("motor_ss.mat", "est_mot");
-
-
-
-% identified = tfest(u_square, I_mot_square, 4, "Ts", 0.05)
-
-% I_sim = lsim(identified, u_square', t_square);
-% rmse = [];
-% fit = [];
-
-% for i = 0:10
-%     ident = tfest(u_square, I_mot_square, i, "Ts", 0.05);
-%     rmse = [rmse, ident.Report.Fit.MSE];
-%     fit = [fit, ident.Report.Fit.FitPercent];
-% end
-% figure;
-% plot(rmse);
-% title("transfer function order fitting");
-% ylabel("RMSE");
-% xlabel("Order");
-
-
-% figure;
-% hold on;
-% plot(I_mot)
-% plot(I_sim)
-% legend("data", "identified")
-% hold off;
-
-% I_sim_sine = lsim(identified, u_sine', t_sine);
-
-% figure;
-
-% hold on;
-% plot(I_mot_sine);
-% plot(I_sim_sine);
-% legend("sine wave data", "identified model");
-% hold off
