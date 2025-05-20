@@ -2,7 +2,7 @@ load("squares_held.mat");
 I_mot_square = I_mot;
 u_square = u;
 theta_square = theta;
-phidot_square = -phidot;
+phidot_square = phidot;
 
 nt = length(u_square);
 dt = 0.05;
@@ -14,7 +14,7 @@ load("sines2_held.mat");
 I_mot_sine = I_mot;
 u_sine = u;
 theta_sine = theta;
-phidot_sine = -phidot;
+phidot_sine = phidot;
 
 nt = length(u_sine);
 Tf = (nt-1) * dt;
@@ -24,7 +24,7 @@ load("sines0_01.mat");
 I_mot_sinefast = I_mot;
 u_sinefast = u;
 theta_sinefast = theta;
-phidot_sinefast = -phidot;
+phidot_sinefast = phidot;
 
 nt = length(u_sinefast);
 dt_fast = 0.01;
