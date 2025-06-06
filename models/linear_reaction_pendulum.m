@@ -5,7 +5,7 @@ A = [
     -(mgL)/J_theta, mu_phi/J_theta, -(mu_theta+mu_phi)/J_theta
     ];
 B = [0; kt/J_phi; -kt/J_theta];
-C = [1, 0, 0; 0, 1, 0];
+C = [1, 0, 0; 0, 1, -1];
 D = zeros(2,1);
 end 
 

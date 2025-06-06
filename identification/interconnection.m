@@ -1,15 +1,23 @@
-load("../models/pendulum_sys.mat");
-load("../models/pendulum_linear_sys.mat");
-load("../models/pendulum_upright.mat");
-load("../models/motor_ss.mat");
-
+load("pendulum_down.mat");
 % pendulum_sys = c2d(sys_min, 0.01, "zoh");
-% pendulum_sys.InputName = "I_mot";
+load("motor_ss.mat");
 
+est_mot.InputName = ["u", "phidot"];
+est_mot.OutputName = "I_mot";
+
+
+dt = 0.01;
 sys_min.InputName = "I_mot";
 sys_min.OutputName = ["theta", "phidot"];
-disc = c2d(sys_min, est_mot.Ts, "foh");
+est_mot = d2c(est_mot, "foh");
+connected = connect(est_mot, sys_min, "u", ["theta", "phidot", "I_mot"]);
 
-connected = connect(est_mot, disc, "u", ["theta", "phidot", "I_mot"]);
+save("../models/connected_down.mat", "connected");
 
-save("../models/connected.mat", "connected");
+
+nt = 10000;
+u = 0.3 * ones(nt, 1);
+t = 0:dt:dt*(nt-1);
+lsim(connected, u, t)
+
+clear
