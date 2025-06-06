@@ -1,0 +1,29 @@
+load("squares_held.mat");
+I_mot_square = I_mot;
+u_square = u;
+theta_square = theta;
+phidot_square = phidot;
+
+load("sines2_held.mat");
+I_mot_sine = I_mot;
+u_sine = u;
+theta_sine = theta;
+phidot_sine = phidot;
+
+nt = length(u_square);
+dt = 0.05;
+Tf = (nt-1) * dt;
+t_square = 0:dt:Tf;
+
+nt = length(u_sine)
+
+identified = tfest(u, I_mot, 5, "Ts", 0.05)
+
+I_sim = lsim(identified, u', t);
+
+hold on;
+plot(I_mot)
+plot(I_sim)
+legend("data", "identified")
+
+hold off;

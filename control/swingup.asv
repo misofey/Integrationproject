@@ -1,0 +1,15 @@
+function [u] = swingup(x)
+
+persistent J_theta kt mgL
+
+if isempty(J_theta)
+    load("lin_params");
+    J_theta = lin_params(1);
+    kt = lin_params(5);
+    mgL = lin_params(6);
+end
+
+thetadot = 
+
+end
+

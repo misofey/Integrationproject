@@ -1,18 +1,33 @@
-
 %% load data
 % load("chirp_delayed.mat");
+load("chirp_101.mat");
+% theta_offset = theta(1);
+% theta_scaling = 2*pi / 4.5;
+% theta = (theta - theta_offset) * theta_scaling;
+% phidot_chirp1 = phidot;
+% I_mot_chirp1 = I_mot;
+% u_chirp1 = u;
+% sine_theta_chirp1 = sin(theta_chirp1);
+% t_chirp1 = 0:0.01:(length(sine_theta_chirp1) * 0.01 - 0.01);
+% thetadot_chirp = gradient(theta_chirp1, t_chirp1);
+
+
+
 delay_estimate = 100;
 initial_condition = [0; 0; 0;];
 
 % data_end = length(theta);
-data_end = 1200;
+data_end = 1900;
 
 theta_offset = theta(1);
 I_corrected = I_mot(delay_estimate+1:data_end);
-theta_corrected = (theta(delay_estimate+1:data_end) -  theta_offset) * pi/4.5;
+theta_corrected = (theta(delay_estimate+1:data_end) -  theta_offset) * 2*pi/4.5;
 phidot_corrected = phidot(delay_estimate+1:data_end);
 
 Ts = 0.01;
+
+theta_corrected = lowpass(theta_corrected, 10, 500);
+
 
 y = [theta_corrected, phidot_corrected];
 u = I_corrected;                          
@@ -53,24 +68,13 @@ parameters = {J_theta, mu_theta, J_phi, mu_phi, kt, mgL};
 nlgr = idnlgrey('reaction_pendulum_model', Order, parameters, initial_condition);
 % nlgr = setpar(nlgr,'Minimum',{eps(0) eps(0) eps(0) eps(0) eps(0) eps(0) });
 % hahaha
-nlgr = setpar(nlgr,'Fixed',{true false false false false false});
+nlgr = setpar(nlgr,'Fixed',{false false false false false false});
 data = iddata(y_train, u_train, 'Ts', 0.01);
 
 
 opt = nlgreyestOptions;
 opt.SearchOptions.MaxIterations = 100;
-% opt.SearchMethod = "fmincon";
 % opt.Display = "Full";
-% nlgr.SimulationOptions.Solver = 'ode23';
-
-% nlgr.Parameters(1).Fixed = true;
-% nlgr.Parameters(4).Fixed = true;
-% nlgr.Parameters(5).Fixed = true;
-
-% opt = nlgreyestOptions;
-% opt.Display = 'on';
-% %opt.SearchMethod = 'lsqnonlin';  
-% opt.SearchOptions.MaxIterations = 100;
 
 estimated_model = nlgreyest(data, nlgr, opt)
 

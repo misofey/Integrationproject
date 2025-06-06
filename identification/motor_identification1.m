@@ -31,36 +31,64 @@ dt_fast = 0.01;
 Tf = (nt-1) * dt_fast;
 t_sinefast = 0:dt_fast:Tf;
 
+load("slow_squares.mat");
+I_mot_ssquares = I_mot;
+u_ssquares = u;
+theta_ssquares = theta;
+phidot_ssquares = phidot;
+
+nt = length(u_ssquares);
+dt_fast = 0.01;
+Tf = (nt-1) * dt_fast;
+t_ssquares = 0:dt_fast:Tf;
+
 % create initial state space system
-A = [1];
-B = [1, 1];
-C = [1];
-D = [0 0];
+    A = [1];
+    B = [1, -1];
+    C = [1];
+    D = [1 -1];
 
 init_sys = idss(A, B, C, D, 0)
 init_sys.Structure.K.Free = false;
-init_sys.Structure.D.Free = [false, false];
+% init_sys.Structure.D.Free = [false, false];
 init_sys.Structure.C.Free = false;
 init_sys.Ts = dt_fast;
 
-u_id = [u_sinefast, phidot_sinefast];
-y_id = [I_mot_sinefast];
+u_id = [u_ssquares, phidot_ssquares];
+y_id = [I_mot_ssquares];
+t_id = t_ssquares;
 
-est_mot = ssest(u_id, y_id, init_sys);
+u_val = [u_sinefast, phidot_sinefast];
+y_val = [I_mot_sinefast];
+t_val = t_sinefast;
 
-training_output = lsim(est_mot, [u_sinefast, phidot_sinefast], t_sinefast);
+est_mot = ssest(u_val, y_val, init_sys);
+
 
 % rmse(validation_output, I_mot_sine)
 
 % square_validation = lsim(est_mot, [u_square, phidot_square], t_square);
 
+training_output = lsim(est_mot, u_id, t_ssquares);
 figure;
 hold on;
-plot(I_mot_sinefast);
+plot(I_mot_ssquares);
 plot(training_output);
 legend("sine wave data", "identified model");
 hold off
 
+
+validation_output = lsim(est_mot, [u_sinefast, I_mot_sinefast], t_sinefast);
+figure;
+hold on;
+plot(I_mot_sinefast);
+plot(validation_output);
+legend("sine wave data", "identified model");
+hold off
+
+
+est_mot.Report.Fit
+est_mot
 % figure;
 % hold on;
 % plot(I_mot_square);
