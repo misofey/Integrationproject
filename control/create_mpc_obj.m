@@ -24,7 +24,7 @@ function [mpcobj, state, empcobj, empcstate] = create_mpc_obj(sys_d, Np, Nc, gen
     % global mpcobj1
     if generate_empc
         range = generateExplicitRange(mpcobj);
-        ubx = [3 10/180*pi 500 10];
+        ubx = [3 10/180*pi 300 1];
         ubdx = [0 0 0 0];
         lbx = -ubx;
         lbdx = [0 0 0 0];

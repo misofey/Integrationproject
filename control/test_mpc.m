@@ -2,9 +2,9 @@ load("connected_filter.mat");
 h = 0.01;
 
 sys_d = c2d(connected, h, "zoh");
-Np = 40;
-Nc = 12;
-generate_empc = false ;
+Np = 36;
+Nc = 3;
+generate_empc = true;
 [mpcobj, state, empcobj, empcstate] = create_mpc_obj(sys_d, Np, Nc, generate_empc);
 %% simulation
 Nsim = 100;
@@ -50,28 +50,28 @@ end
 %% plotting
 figure;
 % Theta
-subplot(5,1,1);
+subplot(2,3,1);
 plot(t, y(1, :), 'LineWidth',1.2);
 ylabel('\theta (rad)');
 title('Theta');
 grid on;
 
 % Phidot
-subplot(5,1,2);
+subplot(2,3,2);
 plot(t, y(2, :), 'LineWidth',1.2);
 ylabel('\phi̇ (rad/s)');
 title('Phidot');
 grid on;
 
 % Motor current
-subplot(5,1,3);
+subplot(2,3,3);
 plot(t, y(3, :), 'LineWidth',1.2);
 ylabel('I_{mot} (A)');
 title('Motor Current');
 grid on;
 
 % Thetadot
-subplot(5,1,4);
+subplot(2,3,4);
 plot(t, y(4, :), 'LineWidth',1.2);
 ylabel('\thetȧ (rad/s)');
 xlabel('t (s)');
@@ -79,7 +79,7 @@ title('Thetadot');
 grid on;
 
 % U
-subplot(5,1,5);
+subplot(2,3,5);
 plot(t, u, 'LineWidth',1.2);
 ylabel('u');
 xlabel('t (s)');
