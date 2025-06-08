@@ -1,0 +1,107 @@
+Nps = [5, 10, 15, 20, 25, 30, 40, 50, 60, 70, 80, 90];
+Nps = 4:2:80;
+
+
+Np_grid = [];
+Nc_grid = [];
+TTimes = [];
+
+for i_np = 1:length(Nps)
+    Np = Nps(i_np);
+    Ncs = divisors(Np);
+    for i_nc = 1:length(Ncs)
+        Nc = Ncs(i_nc);
+        [TTime, ~] = mpc_tuning(Nc, Np);
+        TTimes = [TTimes TTime];
+        Np_grid = [Np_grid Np];
+        Nc_grid = [Nc_grid Nc];
+    end
+end
+
+%% PLOTTING
+% Nc_ratios = 
+
+Np_vals = unique(Np_grid);
+% Nc_grid = Nc_grid./Np_grid;
+Nc_vals = unique(Nc_grid);
+Np_vals = linspace(min(Np_grid), max(Np_grid), 100);
+Nc_vals = linspace(min(Nc_grid), max(Nc_grid), 100);
+
+[Np_mat, Nc_mat] = meshgrid(Np_vals, Nc_vals);
+TT_mat = griddata(Np_grid, Nc_grid, TTimes, Np_mat, Nc_mat, 'natural');
+
+contourf(Np_vals, log(Nc_vals), TT_mat, 20, "LineWidth", 0.001);
+xlabel('Prediction Horizon N_p');
+ylabel('Control Horizon N_c');
+% title('Transient Time vs. N_p and N_c');
+% set(gca,'XTick',Np_vals);
+% set(gca,'YTick',Nc_vals);
+grid on;
+
+%% PRINT STUFF
+
+[minTTime, idx] = min(TTimes(Nc_grid > 2));
+
+% 2) Look up the corresponding Np and Nc
+bestNp = Np_grid(idx)
+bestNc = Nc_grid(idx)
+bestTT = TTimes(idx)
+
+function [TTime, x_traj, y_traj, u_traj] = mpc_tuning(Nc, Np)
+    %
+    % settling time for a given Nc and Np
+    %
+    
+    load("connected_filter.mat");
+    h = 0.01;
+    
+    sys_d = c2d(connected, h, "zoh");
+    generate_empc = false;
+    [mpcobj, state, empcobj, empcstate] = create_mpc_obj(sys_d, Np, Nc, generate_empc);
+    
+    Nsim = 100;
+    Ts = h;
+    x0 = [0, 7 * pi/180, 0, 0];
+    
+    % Dimensions
+    nx = 4;
+    nu = 1;
+    ny = 4;
+    
+    C = sys_d.C;
+    D = sys_d.D;
+    A = sys_d.A;
+    B = sys_d.B;
+    
+    x = zeros(nx, Nsim+1);
+    y = zeros(ny, Nsim+1);
+    u = zeros(nu, Nsim+1);
+    t = (0:Nsim)*Ts;
+    
+    % Initial conditions
+    x(:,1) = x0;
+    u(1) = 0;
+    y(:,1) = C*x0';
+    % u_prev = 0;
+    
+    % You can also track custom states from mpcobj (e.g. estimator states):
+    xmpc = mpcstate(mpcobj);
+    r = [0 0 0 0];
+    % Simulation loop
+    for k = 1:Nsim    
+        % empcstate.Plant = x(:, k);
+        % [u_current, Info] = mpcmoveExplicit(empcobj, empcstate, ymeas, r);
+        [u(k), Info] = mpcmove(mpcobj, xmpc, y(:,k), r);
+        % u_prev = u(k);
+        xmpc.Plant = x(:, k);
+        
+        x(:,k+1) = A*x(:,k) + B*u(k);
+        y(:,k+1) = C*x(:,k+1) + D*u(k);
+    end
+
+    result = stepinfo(y(1, :), t);    
+    TTime = result.TransientTime;
+    x_traj = x;
+    u_traj = u;
+    y_traj = y;
+end
