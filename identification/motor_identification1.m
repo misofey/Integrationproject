@@ -4,10 +4,10 @@
 % theta_square = theta;
 % phidot_square = phidot;
 
-nt = length(u_square);
-dt = 0.05;
-Tf = (nt-1) * dt;
-t_square = 0:dt:Tf;
+% nt = length(u_square);
+% dt = 0.05;
+% Tf = (nt-1) * dt;
+% t_square = 0:dt:Tf;
 
 
 load("sines2_held.mat");
@@ -35,11 +35,11 @@ t_square = 0:dt_fast:Tf;
 A = [5];
 B = [0.5 -0.5];
 C = [1];
-D = [0.5 -0.05];
+D = [0 0];
 
-init_sys = idss(A, B, C, D, 0.025);
+init_sys = idss(A, B, C, D, 0.01);
 % init_sys.Structure.K.Free = false;
-% init_sys.Structure.D.Free = [false, false];
+init_sys.Structure.D.Free = [false, false];
 % init_sys.Structure.C.Free = false;
 init_sys.Ts = dt_fast;
 
@@ -82,4 +82,4 @@ est_mot.InputName = ["u", "phidot"];
 est_mot.OutputName = "I_mot";
 est_mot.Report.Fit
 est_mot
-save("motor_ss.mat", "est_mot");
+% save("motor_ss.mat", "est_mot");

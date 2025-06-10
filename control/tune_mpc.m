@@ -61,7 +61,7 @@ function [TTime, x_traj, y_traj, u_traj] = mpc_tuning(Nc, Np)
     
     Nsim = 100;
     Ts = h;
-    x0 = [0, 10 * pi/180, 0, 0];
+    x0 = [0, 7 * pi/180, 0, 0];
     
     % Dimensions
     nx = 4;
